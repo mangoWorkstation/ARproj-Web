@@ -26,6 +26,7 @@ public class User implements UniversalEntity{
 	private String authCode;
 	private String authCode_expire_t;
 	private String pushID;
+	private String iconPath;
 	public String getUuid() {
 		return uuid;
 	}
@@ -158,6 +159,12 @@ public class User implements UniversalEntity{
 	}
 	public void setPushID(String pushID) {
 		this.pushID = pushID;
+	}
+	public String getIconPath() {
+		return iconPath;
+	}
+	public void setIconPath(String iconPath) {
+		this.iconPath = iconPath;
 	}
 	@Override
 	public String toString() {
