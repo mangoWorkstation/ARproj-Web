@@ -83,6 +83,10 @@ public class UserServlet extends HttpServlet {
 				return;	
 			}
 		}
+		else {
+			response.getWriter().write(JsonEncodeFormatter.universalResponse(90009, "Token Invalid or expired."));
+			return;	
+		}
 	}
 	
 	private void getUserInfo(HashMap<String, String> data,HttpServletResponse response,UserManager userManager) throws IOException {

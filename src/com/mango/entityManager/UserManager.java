@@ -29,7 +29,7 @@ public class UserManager extends DAO<User> implements UserDAO{
 		String sql_query = "select * from USER where tel='"+tel+"';";
 		User aUser = super.get(sql_query);
 		if(aUser==null) {
-			String sql = "insert into USER values ('"+uuid+"','"+tel+"',null,'"+salt+"',null,null,null,null,null,null,null,null,null,null,null,0,0,0,0,'"+authCode+"','"+String.valueOf(authCode_expire_t)+"',null,null)";
+			String sql = "insert into USER values ('"+uuid+"','"+tel+"',null,'"+salt+"',null,null,null,null,null,null,null,null,null,null,null,0,0,0,0,'"+authCode+"','"+String.valueOf(authCode_expire_t)+"',null);";
 			super.update(sql);
 			return true;
 		}

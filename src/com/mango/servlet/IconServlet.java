@@ -2,11 +2,9 @@ package com.mango.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
   
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,6 +13,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.mango.entityManager.UserManager;
 import com.mango.utils.JsonEncodeFormatter;
 
 /**
@@ -23,7 +22,7 @@ import com.mango.utils.JsonEncodeFormatter;
 public class IconServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	 // 上传文件存储目录
-    private static final String UPLOAD_DIRECTORY = "upload";
+    private static final String UPLOAD_DIRECTORY = "./WEB-INF/icons";
   
     // 上传配置
     private static final int MEMORY_THRESHOLD   = 1024 * 1024 * 3;  // 3MB
@@ -52,12 +51,34 @@ public class IconServlet extends HttpServlet {
 		
 		response.setHeader("Content-Type", "application/json;charset=utf8");
 
+		String code = request.getParameter("code").trim();
+		String token = request.getParameter("token").trim();
+		String uuid = request.getParameter("uuid").trim();
+		
+		UserManager userManager = new UserManager();
+		if(userManager.checkToken(token)) {
+			if("10021".compareTo(code)==0) {
+				this.updateUserIcon(uuid, request,response);
+				return;
+			}
+			else {
+				response.getWriter().write(JsonEncodeFormatter.universalResponse(90001, "Invalid Request Code."));
+				return;	
+			}
+		}
+		else {
+			response.getWriter().write(JsonEncodeFormatter.universalResponse(90009, "Token Invalid or expired."));
+			return;	
+		}
+	}
+	
+	
+	
+	private void updateUserIcon(String uuid,HttpServletRequest request,HttpServletResponse response) throws IOException {
 	       // 检测是否为多媒体上传
         if (!ServletFileUpload.isMultipartContent(request)) {
             // 如果不是则停止
-            PrintWriter writer = response.getWriter();
-            writer.println("Error: 表单必须包含 enctype=multipart/form-data");
-            writer.flush();
+            response.getWriter().write(JsonEncodeFormatter.universalResponse(90006, "Illegal request header parameters."));
             return;
         }
   
@@ -96,7 +117,7 @@ public class IconServlet extends HttpServlet {
                 for (FileItem item : formItems) {
                     // 处理不在表单中的字段
                     if (!item.isFormField()) {
-                        String fileName = new File(item.getName()).getName();
+                        String fileName = uuid+".png";
                         String filePath = uploadPath + File.separator + fileName;
                         File storeFile = new File(filePath);
                         // 在控制台输出文件的上传路径
@@ -108,17 +129,16 @@ public class IconServlet extends HttpServlet {
                     }
                 }
                 
-                response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "File uploaded ok."));
+                response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "ok"));
                 return;
             }
         } catch (Exception ex) {
         		ex.printStackTrace();
             request.setAttribute("message",
                     "错误信息: " + ex.getMessage());
-            response.getWriter().write(JsonEncodeFormatter.universalResponse(99999, "File uploaded failed."));
+            response.getWriter().write(JsonEncodeFormatter.universalResponse(90017, "File uploaded failed."));
             return;
         }
 	}
-
 
 }
