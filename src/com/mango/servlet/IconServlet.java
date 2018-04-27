@@ -4,24 +4,22 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
-
+  
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.apache.tomcat.util.http.fileupload.FileItem;
-import org.apache.tomcat.util.http.fileupload.RequestContext;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItemFactory;
-import org.apache.tomcat.util.http.fileupload.servlet.ServletFileUpload;
+  
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.mango.utils.JsonEncodeFormatter;
 
 /**
  * Servlet implementation class IconServlet
  */
-@WebServlet("/IconServlet")
 public class IconServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	 // 上传文件存储目录
@@ -91,7 +89,7 @@ public class IconServlet extends HttpServlet {
   
         try {
             // 解析请求的内容提取文件数据
-            List<FileItem> formItems = upload.parseRequest((RequestContext) request);
+            List<FileItem> formItems = upload.parseRequest(request);
   
             if (formItems != null && formItems.size() > 0) {
                 // 迭代表单数据
@@ -114,6 +112,7 @@ public class IconServlet extends HttpServlet {
                 return;
             }
         } catch (Exception ex) {
+        		ex.printStackTrace();
             request.setAttribute("message",
                     "错误信息: " + ex.getMessage());
             response.getWriter().write(JsonEncodeFormatter.universalResponse(99999, "File uploaded failed."));
