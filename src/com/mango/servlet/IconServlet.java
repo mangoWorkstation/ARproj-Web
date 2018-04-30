@@ -1,7 +1,9 @@
 package com.mango.servlet;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
   
 import javax.servlet.ServletException;
@@ -22,7 +24,7 @@ import com.mango.utils.JsonEncodeFormatter;
 public class IconServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	 // 上传文件存储目录
-    private static final String UPLOAD_DIRECTORY = "./WEB-INF/icons";
+    private static final String UPLOAD_DIRECTORY = "/WEB-INF/icons";
   
     // 上传配置
     private static final int MEMORY_THRESHOLD   = 1024 * 1024 * 3;  // 3MB
@@ -49,16 +51,18 @@ public class IconServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		response.setHeader("Content-Type", "application/json;charset=utf8");
-
+				
 		String code = request.getParameter("code").trim();
 		String token = request.getParameter("token").trim();
-		String uuid = request.getParameter("uuid").trim();
 		
 		UserManager userManager = new UserManager();
 		if(userManager.checkToken(token)) {
-			if("10021".compareTo(code)==0) {
-				this.updateUserIcon(uuid, request,response);
+			if("10022".compareTo(code)==0) {
+				this.updateUserIcon(request,response);
+				return;
+			}
+			if("10023".compareTo(code)==0) {
+				this.getUserIcons(request,response);
 				return;
 			}
 			else {
@@ -74,8 +78,36 @@ public class IconServlet extends HttpServlet {
 	
 	
 	
-	private void updateUserIcon(String uuid,HttpServletRequest request,HttpServletResponse response) throws IOException {
-	       // 检测是否为多媒体上传
+	private void getUserIcons(HttpServletRequest request,HttpServletResponse response) {
+		
+        response.setContentType("Content-Type: application/octet-stream;charset=utf-8"); //设置返回的文件类型   
+
+		String uuid = request.getParameter("uuid");
+		FileInputStream fis;
+		String imagePath = getServletContext().getRealPath("/WEB-INF/icons/"+uuid+".jpg");    
+		try {
+			fis = new FileInputStream(imagePath);
+			int size =fis.available(); //得到文件大小   
+	        byte data[]=new byte[size];   
+	        fis.read(data);  //读数据   
+	        fis.close();   
+	        OutputStream os = response.getOutputStream();  
+	        os.write(data);  
+	        os.flush(); 
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}  
+               
+	}
+
+	private void updateUserIcon(HttpServletRequest request,HttpServletResponse response) throws IOException {
+		response.setHeader("Content-Type", "application/json;charset=utf8");  
+		
+		String uuid = request.getParameter("uuid").trim();
+		
+		// 检测是否为多媒体上传
         if (!ServletFileUpload.isMultipartContent(request)) {
             // 如果不是则停止
             response.getWriter().write(JsonEncodeFormatter.universalResponse(90006, "Illegal request header parameters."));
@@ -117,8 +149,9 @@ public class IconServlet extends HttpServlet {
                 for (FileItem item : formItems) {
                     // 处理不在表单中的字段
                     if (!item.isFormField()) {
-                        String fileName = uuid+".png";
-                        String filePath = uploadPath + File.separator + fileName;
+                    System.out.println(item.getName());
+                    	String fileName = new File(uuid+".jpg").getName();
+                    	String filePath = uploadPath + File.separator + fileName;
                         File storeFile = new File(filePath);
                         // 在控制台输出文件的上传路径
                         System.out.println(filePath);

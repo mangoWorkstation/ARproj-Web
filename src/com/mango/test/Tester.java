@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.Map.Entry;
 
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
@@ -27,34 +28,34 @@ public class Tester {
 	@SuppressWarnings("unchecked")
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		String aString = "123456";
-		String salt = SaltCreator.create();
-		System.out.println(salt);
-		System.out.println(new Encryptor().encodeSHA512Salt(aString, salt));
-		
-		System.out.println(System.currentTimeMillis());
-		
-		
-		String str = "{\n" + 
-				"    \"code\": \"10001\",\n" + 
-				"    \"timestamp\": \"172928372829\",\n" + 
-				"    \"token\":\"42e5015f-d7d9-4e96-89d5-43906bfa0abb\",\n" + 
-				"    \"helloworld\":\"121212121212\",\n" + 
-				"    \"data\": [\n" + 
-				"       {\n" + 
-				"        \"key1\": \"value1\",\n" + 
-				"        \"key2\": \"value2\",\n" + 
-				"        \"beach\":\"sun\"\n" + 
-				"       },\n" + 
-				"       {\n" + 
-				"        \"key3\": \"value3\",\n" + 
-				"        \"key4\": \"value4\",\n" + 
-				"        \"beach\":\"sun\"\n" + 
-				"       }\n" + 
-				"    ]\n" + 
-				"}";
-	    HashMap<String, Object> eHashMap = JsonDecodeFormatter.decodeDataArray(str);
-	    System.out.println(eHashMap.toString());
+//		String aString = "123456";
+//		String salt = SaltCreator.create();
+//		System.out.println(salt);
+//		System.out.println(new Encryptor().encodeSHA512Salt(aString, salt));
+//		
+//		System.out.println(System.currentTimeMillis());
+//		
+//		
+//		String str = "{\n" + 
+//				"    \"code\": \"10001\",\n" + 
+//				"    \"timestamp\": \"172928372829\",\n" + 
+//				"    \"token\":\"42e5015f-d7d9-4e96-89d5-43906bfa0abb\",\n" + 
+//				"    \"helloworld\":\"121212121212\",\n" + 
+//				"    \"data\": [\n" + 
+//				"       {\n" + 
+//				"        \"key1\": \"value1\",\n" + 
+//				"        \"key2\": \"value2\",\n" + 
+//				"        \"beach\":\"sun\"\n" + 
+//				"       },\n" + 
+//				"       {\n" + 
+//				"        \"key3\": \"value3\",\n" + 
+//				"        \"key4\": \"value4\",\n" + 
+//				"        \"beach\":\"sun\"\n" + 
+//				"       }\n" + 
+//				"    ]\n" + 
+//				"}";
+//	    HashMap<String, Object> eHashMap = JsonDecodeFormatter.decodeDataArray(str);
+//	    System.out.println(eHashMap.toString());
 	    
 //	    if(SqlManager.getInstance().connection.equals(null)==false) {
 //	    		System.out.println(SqlManager.getInstance().connection.getHost());
@@ -131,50 +132,63 @@ public class Tester {
 	    
 	    
 	    	
-	    HashMap<String,Integer> aHashMap = new HashMap<>();
-	    aHashMap.put("a", 5);
+//	    HashMap<String,Integer> aHashMap = new HashMap<>();
+//	    aHashMap.put("a", 5);
+//	    
+//	    aHashMap.put("b", 1);
+//	    
+//	    aHashMap.put("c", 7);
+//	    
+//	    aHashMap.put("d", 4);
+//	    
+//	    aHashMap.put("e", 2);
+//	    
+//	    aHashMap.put("f", 0);
+//	   
+//	    ArrayList<Map.Entry<String, Integer>> list = new ArrayList<>(aHashMap.entrySet());
+//	    System.out.println(aHashMap.toString());
+//
+//	    
+//		//根据所用时长，对用户进行排序
+//		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+//
+//			@Override
+//			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
+//				// TODO Auto-generated method stub
+//				
+//				return o1.getValue().compareTo(o2.getValue());
+//			}
+//		});
+//		
+//		System.out.println(list.toString());
+//			
+//		
+//		User user = new User();
+//		user.setName("hello");
+//		user.setAge(5);
+//		System.out.println(user.toHashMap());
+//		
+//		System.out.println(user.toSecureHashMap());
+//		
+//		UserManager userManager = new UserManager();
+//		
+//		System.out.println(userManager.checkToken("aaaa"));
+//		
+//		System.out.println(userManager.getForList("select * from USER;").toString());
 	    
-	    aHashMap.put("b", 1);
-	    
-	    aHashMap.put("c", 7);
-	    
-	    aHashMap.put("d", 4);
-	    
-	    aHashMap.put("e", 2);
-	    
-	    aHashMap.put("f", 0);
-	   
-	    ArrayList<Map.Entry<String, Integer>> list = new ArrayList<>(aHashMap.entrySet());
-	    System.out.println(aHashMap.toString());
-
-	    
-		//根据所用时长，对用户进行排序
-		Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
-
-			@Override
-			public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2) {
-				// TODO Auto-generated method stub
-				
-				return o1.getValue().compareTo(o2.getValue());
-			}
-		});
 		
-		System.out.println(list.toString());
-			
+		String uuid = UUID.randomUUID().toString();
 		
-		User user = new User();
-		user.setName("hello");
-		user.setAge(5);
-		System.out.println(user.toHashMap());
+		String shapwd = new Encryptor().SHA512("123456");
 		
-		System.out.println(user.toSecureHashMap());
+		String salt = SaltCreator.create();
 		
-		UserManager userManager = new UserManager();
+		String appKey = new Encryptor().encodeSHA512Salt(shapwd, salt);
 		
-		System.out.println(userManager.checkToken("aaaa"));
-		
-		System.out.println(userManager.getForList("select * from USER;").toString());
-	    
+		System.out.println(uuid);
+		System.out.println(shapwd);
+		System.out.println(salt);
+		System.out.println(appKey);
 	    
 	}
 	
