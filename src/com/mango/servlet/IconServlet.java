@@ -78,7 +78,7 @@ public class IconServlet extends HttpServlet {
 	
 	
 	
-	private void getUserIcons(HttpServletRequest request,HttpServletResponse response) {
+	private void getUserIcons(HttpServletRequest request,HttpServletResponse response) throws IOException {
 		
         response.setContentType("Content-Type: application/octet-stream;charset=utf-8"); //设置返回的文件类型   
 
@@ -97,6 +97,7 @@ public class IconServlet extends HttpServlet {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			response.getWriter().write(JsonEncodeFormatter.universalResponse(90006, "Illegal request header parameters."));
 			return;
 		}  
                

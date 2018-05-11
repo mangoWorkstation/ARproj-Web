@@ -171,7 +171,7 @@ public class UserManager extends DAO<User> implements UserDAO{
 
 	@Override
 	public User getBasicProfile(String key) {
-		String sql = String.format("select * from USER where uuid = '%s' or token = '%s';", key,key);
+		String sql = String.format("select * from USER where uuid = '%s' or token = '%s' or tel = '%s';", key,key,key);
 		try {
 			return super.get(sql);
 		} catch (Exception e) {

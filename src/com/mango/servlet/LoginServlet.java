@@ -65,7 +65,7 @@ public class LoginServlet extends HttpServlet {
 	private void appKey_login(HashMap<String, Object> params , HttpServletResponse response) throws IOException {
 		HashMap<String, String> data = (HashMap<String, String>)params.get("data");
 		String tel = data.get("tel");
-		String SHApwd = data.get("SHApwd");
+		String SHApwd = data.get("SHAPwd");
 		String pushID = data.get("pushID");
 		if(pushID==null) {
 			response.getWriter().write(JsonEncodeFormatter.universalResponse(90008, "Push ID Empty."));

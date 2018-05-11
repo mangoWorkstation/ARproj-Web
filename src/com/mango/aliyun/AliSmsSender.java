@@ -31,7 +31,7 @@ public class AliSmsSender {
     static final String accessKeyId = "LTAIJLkwk6dKIzFo";
     static final String accessKeySecret = "3bpjMPTbZsXSPF8GswtNpDfdRBmYKq";
 
-    private static SendSmsResponse sendSms(String tel,String authCode) throws ClientException {
+    public static SendSmsResponse sendSms(String tel,String authCode) throws ClientException {
 
         //可自助调整超时时间
         System.setProperty("sun.net.client.defaultConnectTimeout", "10000");
@@ -64,6 +64,7 @@ public class AliSmsSender {
 		try {
 			SendSmsResponse response = sendSms(tel, authCode);
 			String result = response.getCode();
+			System.out.println(result);
 //			String result = "OK";
 			if("OK".compareTo(result)==0) {
 				return true;

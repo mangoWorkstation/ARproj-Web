@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import com.aliyuncs.dysmsapi.model.v20170525.SendSmsResponse;
 import com.aliyuncs.exceptions.ClientException;
+import com.aliyuncs.*;
 import com.mango.aliyun.AliSmsSender;
 import com.mango.aliyun.AliyunPushManager;
 import com.mango.db.SqlManager;
@@ -65,13 +66,9 @@ public class Tester {
 //	    ARPackage arPackage = arPackageManager.get("aaaa");
 //	    System.out.println(arPackage.toString());
 	    
-//	    try {
-//			SendSmsResponse response = AliSmsSender.sendSms("1587876097577", "233333");
-//			System.out.println("[response code] "+response.getCode());
-//		} catch (ClientException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+	    
+//		AliSmsSender.sendAuthCodeSms("15678866034", "233333");
+		
 	    
 //	    List<ARPackage> list = arPackageManager.getAll();
 //	    Iterator<ARPackage> iterator = list.iterator();
@@ -177,18 +174,22 @@ public class Tester {
 //		System.out.println(userManager.getForList("select * from USER;").toString());
 	    
 		
-		String uuid = UUID.randomUUID().toString();
+//		String uuid = UUID.randomUUID().toString();
+//		
+//		String shapwd = new Encryptor().SHA512("123456");
+//		
+//		String salt = SaltCreator.create();
+//		
+//		String appKey = new Encryptor().encodeSHA512Salt(shapwd, salt);
+//		
+//		System.out.println(uuid);
+//		System.out.println(shapwd);
+//		System.out.println(salt);
+//		System.out.println(appKey);
 		
-		String shapwd = new Encryptor().SHA512("123456");
-		
-		String salt = SaltCreator.create();
-		
-		String appKey = new Encryptor().encodeSHA512Salt(shapwd, salt);
-		
-		System.out.println(uuid);
-		System.out.println(shapwd);
-		System.out.println(salt);
-		System.out.println(appKey);
+		String sql = String.format("update DEVICE set air_temp = %f,air_humidity = %f,soil_temp = %f,soil_humidity = %f,",0.1,0.1,0.1,0.1);
+		System.out.println(sql);
+
 	    
 	}
 	

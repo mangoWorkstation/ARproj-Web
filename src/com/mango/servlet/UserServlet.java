@@ -128,7 +128,7 @@ public class UserServlet extends HttpServlet {
 		
 		if(userManager.verifyAuthCode(authCode, token)) {
 			String newAuthCode = AuthCodeCreator.create();
-			if(userManager.updateAuthCode(authCode, token)) {
+			if(userManager.updateAuthCode(newAuthCode, token)) {
 				if(AliSmsSender.sendAuthCodeSms(newTel, newAuthCode)) {
 					response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "AuthCode OK.Notify client for new SMS."));
 					return;
@@ -156,6 +156,12 @@ public class UserServlet extends HttpServlet {
 				e.printStackTrace();
 			}
 			return;	
+		}
+		
+		if(userManager.getBasicProfile(newTel)!=null) {
+			response.getWriter().write(JsonEncodeFormatter.universalResponse(90006, "Illegal Parameters or existing tel."));
+			return;
+
 		}
 		
 		//此处不把验证码字段还原为空，让数据库自动清除

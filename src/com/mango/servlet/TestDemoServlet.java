@@ -62,7 +62,7 @@ public class TestDemoServlet extends HttpServlet {
 	}
 	
 	private void testPushService(HashMap<String, String> data, HttpServletResponse response) {
-		String deviceID = data.get("deviceID").trim();
+		String deviceID = data.get("pushID").trim();
 		String title = data.get("title");
 		String body = data.get("body");
 		String type = data.get("type");

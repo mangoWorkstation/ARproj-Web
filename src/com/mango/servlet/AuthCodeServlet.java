@@ -204,11 +204,15 @@ public class AuthCodeServlet extends HttpServlet {
 		HashMap<String, String> data = (HashMap<String, String>)params.get("data");
 		String token = data.get("token");
 		UserManager userManager = new UserManager();
+		User user = userManager.getBasicProfile(token);
 		if(userManager.checkToken(token)) {
 			String authCode = AuthCodeCreator.create();
 			if(userManager.updateAuthCode(authCode, token)) {
-				response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "SMS sent."));
+				if(AliSmsSender.sendAuthCodeSms(user.getTel(), authCode)) {
+					response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "SMS sent."));
+				}
 				return;
+				
 			}
 		}
 		else {
