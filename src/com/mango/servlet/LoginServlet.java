@@ -18,6 +18,8 @@ import com.mango.utils.POST2String;
  */
 public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private static final String rex = "^1([358][0-9]|4[579]|66|7[0135678]|9[89])[0-9]{8}$"; 
+
 
     /**
      * Default constructor. 
@@ -67,6 +69,17 @@ public class LoginServlet extends HttpServlet {
 		String tel = data.get("tel");
 		String SHApwd = data.get("SHAPwd");
 		String pushID = data.get("pushID");
+		
+		//强正则表达式进行校验,不满足的将拒绝，测试通过2018-03-27
+		if(tel.matches(LoginServlet.rex)==false) {
+			try {
+				response.getWriter().write(JsonEncodeFormatter.universalResponse(90002, "Illegal Phone Number."));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return;	
+		}
+		
 		if(pushID==null) {
 			response.getWriter().write(JsonEncodeFormatter.universalResponse(90008, "Push ID Empty."));
 			return;

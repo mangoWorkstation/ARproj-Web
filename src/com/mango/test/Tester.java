@@ -174,21 +174,21 @@ public class Tester {
 //		System.out.println(userManager.getForList("select * from USER;").toString());
 	    
 		
-//		String uuid = UUID.randomUUID().toString();
-//		
-//		String shapwd = new Encryptor().SHA512("123456");
-//		
-//		String salt = SaltCreator.create();
-//		
-//		String appKey = new Encryptor().encodeSHA512Salt(shapwd, salt);
-//		
-//		System.out.println(uuid);
-//		System.out.println(shapwd);
-//		System.out.println(salt);
-//		System.out.println(appKey);
+		String uuid = UUID.randomUUID().toString();
 		
-		String sql = String.format("update DEVICE set air_temp = %f,air_humidity = %f,soil_temp = %f,soil_humidity = %f,",0.1,0.1,0.1,0.1);
-		System.out.println(sql);
+		String shapwd = new Encryptor().SHA512("123456");
+		
+		String salt = SaltCreator.create();
+		
+		String appKey = new Encryptor().encodeSHA512Salt(shapwd, salt);
+		
+		System.out.println(uuid);
+		System.out.println(shapwd);
+		System.out.println(salt);
+		System.out.println(appKey);
+		
+//		String sql = String.format("update DEVICE set air_temp = %f,air_humidity = %f,soil_temp = %f,soil_humidity = %f,",0.1,0.1,0.1,0.1);
+//		System.out.println(sql);
 
 	    
 	}
