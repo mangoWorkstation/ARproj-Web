@@ -215,6 +215,8 @@ public class User implements UniversalEntity{
 		eHashMap.put("stepCount", String.valueOf(stepCount));
 		eHashMap.put("thumbsUpCount", String.valueOf(thumbsUpCount));
 		eHashMap.put("joinCount", String.valueOf(joinCount));
+		eHashMap.put("arCount",String.valueOf(arCount));
+		eHashMap.put("tel", tel);
 		
 		return eHashMap;
 	}

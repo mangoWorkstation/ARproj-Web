@@ -129,7 +129,7 @@ public class TeamPoolServlet extends HttpServlet {
 			//通知所有的用户更新当前房间内的成员视图
 			try {
 				AliyunPushManager aliyunPushManager = new AliyunPushManager();
-				aliyunPushManager.pushMessageToAndroid("有新成员加入哟！",updateFeedBackStr,pushIdStr);
+				aliyunPushManager.pushMessageToAndroid("有成员变动",updateFeedBackStr,pushIdStr);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -200,7 +200,7 @@ public class TeamPoolServlet extends HttpServlet {
 					//通知所有的用户更新当前房间内的成员视图
 					try {
 						AliyunPushManager aliyunPushManager = new AliyunPushManager();
-						aliyunPushManager.pushMessageToAndroid("有成员完成了噢！加快速度啊啊啊",null,pushIdStr);
+						aliyunPushManager.pushNoticeToAndroid("有成员完成了噢！","加快速度啊啊啊！",pushIdStr);
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -221,6 +221,38 @@ public class TeamPoolServlet extends HttpServlet {
 		TeamPoolManager teamPoolManager = new TeamPoolManager();
 		
 		if(teamPoolManager.releaseUser(roomUid, uuid)) {
+			//广播完成通知
+			//获取当前房间中所有成员的基本信息					
+			String pushIdStr = teamPoolManager.getCurrentMembersPushIDs(roomUid);
+			
+			//获取当前房间中所有成员的基本信息
+			ArrayList<User> users = teamPoolManager.getCurrentMembers(roomUid);
+			
+			//所有成员的pushID拼接的字符串
+			ArrayList<Map<String, String>> data_array = new ArrayList<>();
+			Iterator<User> userIterator = users.iterator();
+			while(userIterator.hasNext()) {
+				User _user = userIterator.next(); 
+				data_array.add(_user.toSecureHashMap());
+			}
+			
+			RoomManager roomManager = new RoomManager();
+			Room room = roomManager.getByUid(roomUid);
+			HashMap<String, String> roomInfo = room.toHashMap();
+			
+			//信息炒鸡大汇总
+			String updateFeedBackStr = JsonEncodeFormatter.parser(0, roomInfo, data_array);
+			
+			//通知所有的用户更新当前房间内的成员视图
+			try {
+				AliyunPushManager aliyunPushManager = new AliyunPushManager();
+				aliyunPushManager.pushMessageToAndroid("有成员变动",updateFeedBackStr,pushIdStr);
+			} catch (Exception e) {
+				e.printStackTrace();
+				response.getWriter().write(JsonEncodeFormatter.universalResponse(90010,"Server Busy"));
+				return;
+			}
+
 			response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "Quit OK."));
 			return;
 		}

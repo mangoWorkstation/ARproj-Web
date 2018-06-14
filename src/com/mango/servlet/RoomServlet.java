@@ -1,11 +1,14 @@
 package com.mango.servlet;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.SimpleFormatter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -127,14 +130,16 @@ public class RoomServlet extends HttpServlet {
 		//1.先解散队伍，并获取房间内所有人的推送id
 		TeamPoolManager teamPoolManager = new TeamPoolManager();
 		String pushIDs = teamPoolManager.getCurrentMembersPushIDs(roomUid);
-		if(teamPoolManager.toDismiss(roomUid)) {
-			try {
-				AliyunPushManager aliyunPushManager = new AliyunPushManager();
-				aliyunPushManager.pushMessageToAndroid("房主解散了房间", "", pushIDs);
-			} catch (Exception e) {
-				e.printStackTrace();
+		System.out.println(pushIDs);
+		try {
+			AliyunPushManager aliyunPushManager = new AliyunPushManager();
+			if(teamPoolManager.toDismiss(roomUid)) {
+				aliyunPushManager.pushMessageToAndroid("房主解散了房间", "房主解散了房间", pushIDs);
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
 		
 		//2.解除房主和房间的关系
 		RoomManager roomManager = new RoomManager();
@@ -151,6 +156,7 @@ public class RoomServlet extends HttpServlet {
 	
 	private void callForGameStart(HashMap<String, String> data,HttpServletResponse response) throws IOException {
 		String roomUid = data.get("roomUid");
+		String duration = data.get("duration");
 		
 		RoomManager roomManager = new RoomManager();
 		Room room = roomManager.getByUid(roomUid);
@@ -180,7 +186,10 @@ public class RoomServlet extends HttpServlet {
 				arpacks_transferred.add(arIterator.next().toHashMap());
 			}
 			
-			String info = JsonEncodeFormatter.parser(0, arpacks_transferred);
+			HashMap<String, String> addition = new HashMap<>();
+			addition.put("duration", duration);
+			
+			String info = JsonEncodeFormatter.parser(0,addition, arpacks_transferred);
 			
 			
 			//通知所有的用户更新当前房间内的成员视图
@@ -203,6 +212,7 @@ public class RoomServlet extends HttpServlet {
 	
 	private void callForGameEnd(HashMap<String, String> data,HttpServletResponse response) throws IOException{
 		String roomUid = data.get("roomUid");
+		String uuid = data.get("uuid");
 		
 		TeamPoolManager teamPoolManager = new TeamPoolManager();
 		UserManager userManager = new UserManager();
@@ -216,21 +226,23 @@ public class RoomServlet extends HttpServlet {
 			HashMap<User, Integer> result = teamPoolManager.getResultRank(roomUid);
 			if(result!=null) {
 				String pushids = teamPoolManager.getCurrentMembersPushIDs(roomUid);
+				System.out.println(new SimpleDateFormat().format(new Date())+"\n pushids = "+pushids);
 				
 				//返回排行榜
-				ArrayList<HashMap<String, String>> rankInfo = new ArrayList<>();
+				ArrayList<Map<String, String>> rankInfo = new ArrayList<>();
 				Iterator<User> userIterator = result.keySet().iterator();
 				while(userIterator.hasNext()) {
 					User curUser = userIterator.next();
 					HashMap<String, String> user_addition_info = curUser.toSecureHashMap();
 					int timeInterval = result.get(curUser).intValue();
 					user_addition_info.put("time", String.valueOf(timeInterval));
+					System.out.println(new SimpleDateFormat().format(new Date()) + "\n userInfo = "+user_addition_info.toString());
 					rankInfo.add(user_addition_info);
 				}
 				
 				//将排行榜广播给每个用户
-				@SuppressWarnings("unchecked")
-				String pushBody = JsonEncodeFormatter.parser(0, (Map<String, String>) rankInfo);
+				String pushBody = JsonEncodeFormatter.parser(0, rankInfo);
+				System.out.println(new SimpleDateFormat().format(new Date()) + "\n pushBody = "+pushBody);
 				
 				try {
 					AliyunPushManager aliyunPushManager = new AliyunPushManager();
@@ -261,7 +273,8 @@ public class RoomServlet extends HttpServlet {
 					userManager.updateEventSummary(cur.getUserid(), cur.getArCount(), cur.getStepCount());
 				}
 				
-				
+				teamPoolManager.toDismiss(roomUid);
+				roomManager.toDestroy(uuid, roomUid);
 				
 				response.getWriter().write(JsonEncodeFormatter.universalResponse(0, "Success.Team pool will soon be dismissed"));
 				return;

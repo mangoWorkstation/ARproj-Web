@@ -2,9 +2,11 @@ package com.mango.entityManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -100,7 +102,7 @@ public class TeamPoolManager extends DAO<TeamPool> implements TeamPoolDAO {
 
 	@Override
 	public boolean updateGamePercent(String roomUid, String uuid,float percent,int arCount,int stepCount) {
-		String sql = "update TEAMPOOL set percent = "+percent+",ARCount = "+arCount+",stepCount="+stepCount+" where roomid = '"+roomUid+"' and uuid = '"+uuid+"';";
+		String sql = "update TEAMPOOL set percent = "+percent+",ARCount = "+arCount+",stepCount="+stepCount+" where roomid = '"+roomUid+"' and userid = '"+uuid+"';";
 		try {
 			super.update(sql);
 			return true;
@@ -112,7 +114,7 @@ public class TeamPoolManager extends DAO<TeamPool> implements TeamPoolDAO {
 
 	@Override
 	public boolean updateDoneTime(String roomUid, String uuid, String done_t,int arCount,int stepCount) {
-		String sql = "update TEAMPOOL set done_t = '"+done_t+"',percent=1,ARCount = "+arCount+",stepCount="+stepCount+" where roomid = '"+roomUid+"' and uuid = '"+uuid+"';";
+		String sql = "update TEAMPOOL set done_t = '"+done_t+"',percent=1,ARCount = "+arCount+",stepCount="+stepCount+" where roomid = '"+roomUid+"' and userid = '"+uuid+"';";
 		try {
 			super.update(sql);
 			return true;
@@ -139,7 +141,7 @@ public class TeamPoolManager extends DAO<TeamPool> implements TeamPoolDAO {
 		int lastIndex = pushIdCh.length;
 		pushIdCh[lastIndex-1] = ' ';
 		pushIdStr = String.valueOf(pushIdCh);
-		return pushIdStr;
+		return pushIdStr.trim();
 	}
 
 	@Override
@@ -158,15 +160,22 @@ public class TeamPoolManager extends DAO<TeamPool> implements TeamPoolDAO {
 				user.setPushID(resultSet.getString("pushID"));
 				user.setName(resultSet.getString("name"));		
 				
-				//计算所用时间
-				Integer timeInterval = new Integer(Integer.valueOf(resultSet.getString("done_t"))-Integer.valueOf(resultSet.getString("start_t")));
-				
-				HashMap<User, Integer> r = new HashMap<>();
-				r.put(user, timeInterval);
+				Integer timeInterval = null;
+				if(resultSet.getString("done_t")==null) {
+					//计算所用时间
+					timeInterval = new Integer(Integer.valueOf(String.valueOf(System.currentTimeMillis()/1000))-Integer.valueOf(resultSet.getString("start_t")));
+					
+				}
+				else {
+					timeInterval = new Integer(Integer.valueOf(String.valueOf(resultSet.getString("done_t")))-Integer.valueOf(resultSet.getString("start_t")));
+				}
+			
+//				HashMap<User, Integer> r = new HashMap<>();
+				rank.put(user, timeInterval);
 			}
 			
 			ArrayList<Map.Entry<User, Integer>> list = new ArrayList<>(rank.entrySet());
-			System.out.println(rank.toString());
+			
 			
 			//根据所用时长，对用户进行排序
 			Collections.sort(list, new Comparator<Map.Entry<User, Integer>>() {
@@ -176,6 +185,9 @@ public class TeamPoolManager extends DAO<TeamPool> implements TeamPoolDAO {
 					return o1.getValue().compareTo(o2.getValue());
 				}
 			});
+			
+			
+			System.out.println(new SimpleDateFormat().format(new Date())+"\n rank"+rank.toString());
 			
 			return rank;
 			

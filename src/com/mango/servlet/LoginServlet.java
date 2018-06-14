@@ -70,7 +70,11 @@ public class LoginServlet extends HttpServlet {
 		String SHApwd = data.get("SHAPwd");
 		String pushID = data.get("pushID");
 		
-		//强正则表达式进行校验,不满足的将拒绝，测试通过2018-03-27
+		if(pushID==null) {
+			response.getWriter().write(JsonEncodeFormatter.universalResponse(90008, "Push ID Empty."));
+			return;
+		}
+		
 		if(tel.matches(LoginServlet.rex)==false) {
 			try {
 				response.getWriter().write(JsonEncodeFormatter.universalResponse(90002, "Illegal Phone Number."));
@@ -80,10 +84,6 @@ public class LoginServlet extends HttpServlet {
 			return;	
 		}
 		
-		if(pushID==null) {
-			response.getWriter().write(JsonEncodeFormatter.universalResponse(90008, "Push ID Empty."));
-			return;
-		}
 		UserManager userManager = new UserManager();
 		HashMap<String, String> result = userManager.loginWithSHApwd(SHApwd, tel,pushID);
 		if(result != null) {

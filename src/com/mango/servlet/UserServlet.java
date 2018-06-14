@@ -205,13 +205,14 @@ public class UserServlet extends HttpServlet {
 		String limit = data.get("limit");
 		
 		RecordManager recordManager = new RecordManager();
-		if(Long.valueOf(from_t)>Long.valueOf(to_t) || Integer.valueOf(limit)>100) {
-			response.getWriter().write(JsonEncodeFormatter.universalResponse(90006, "Illegal parameters.Check Again."));
-			return;
-		}
+		
 		
 		ArrayList<Record> records = null;
 		if(from_t!=null&&to_t!=null&&limit!=null) {
+			if(Long.valueOf(from_t)>Long.valueOf(to_t) || Integer.valueOf(limit)>100) {
+				response.getWriter().write(JsonEncodeFormatter.universalResponse(90006, "Illegal parameters.Check Again."));
+				return;
+			}
 			records = recordManager.getByTime(from_t, to_t, Integer.valueOf(limit), uuid);
 		}
 		else {
@@ -219,12 +220,12 @@ public class UserServlet extends HttpServlet {
 		}
 		
 		if(records.size()>0) {
-			ArrayList<HashMap<String, String>> record_parsed = new ArrayList<>();
+			ArrayList<Map<String, String>> record_parsed = new ArrayList<>();
 			Iterator<Record> recordIterator = records.iterator();
 			while(recordIterator.hasNext()) {
 				record_parsed.add(recordIterator.next().toHashMap());
 			}
-			response.getWriter().write(JsonEncodeFormatter.parser(0, (Map<String, String>) record_parsed));
+			response.getWriter().write(JsonEncodeFormatter.parser(0, record_parsed));
 			return;
 		}
 		else {

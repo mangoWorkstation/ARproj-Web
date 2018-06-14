@@ -159,7 +159,7 @@ public class UserManager extends DAO<User> implements UserDAO{
 
 	@Override
 	public boolean updateEventSummary(String uuid, int arCount, int stepCount) {
-		String sql = "update USER set arCount = arCount + "+arCount+",stepCount = stepCount + "+stepCount+" where uuid = '"+uuid+"';";
+		String sql = "update USER set arCount = arCount + "+arCount+",stepCount = stepCount + "+stepCount+" ,joinCount = joinCount + 1 where uuid = '"+uuid+"';";
 		try {
 			super.update(sql);
 			return true;
@@ -222,7 +222,7 @@ public class UserManager extends DAO<User> implements UserDAO{
 		
 		//只更新appKey，不更新盐
 		String appKey = new Encryptor().encodeSHA512Salt(SHAPwd, user.getSalt());
-		String sql = String.format("update USER set appKey='%s'; where token = '%s';", appKey,token);
+		String sql = String.format("update USER set appKey='%s',authCode = NULL, authCode_expire_t = NULL where token = '%s';", appKey,token);
 		
 		try {
 			super.update(sql);
